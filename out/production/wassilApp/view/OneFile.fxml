@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml" fx:id="gp" alignment="CENTER" vgap="15"
+          fx:controller="view.OneFileController">
+    <Pane fx:id="pane" GridPane.columnIndex="0" GridPane.rowIndex="0">
+
+    </Pane>
+    <HBox fx:id="hBox" GridPane.columnIndex="0" GridPane.rowIndex="1" spacing="20" alignment="CENTER">
+        <Button fx:id="buttonOne" text="Fichier..." styleClass="glass-grey" onAction="#buttonOneClick"></Button>
+        <Button fx:id="buttonCalc" text="Traiter" styleClass="glass-grey" onAction="#buttonCalcClick"></Button>
+    </HBox>
+    <VBox fx:id="vBox" GridPane.columnIndex="0" GridPane.rowIndex="2" spacing="20" alignment="TOP_CENTER"
+          GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" styleClass="lightVbox">
+        <Label fx:id="label"></Label>
+        <Label fx:id="messageLabel" styleClass="messageLabel"></Label>
+        <Button fx:id="config" text="تغيير التقديرات والإرشادات" styleClass="config-style"
+                onAction="#configClick"></Button>
+    </VBox>
+</GridPane>
