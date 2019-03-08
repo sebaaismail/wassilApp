@@ -10,12 +10,15 @@ import javafx.stage.WindowEvent;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.Iterator;
 
 public class MyApp extends Application {
 
@@ -144,54 +147,63 @@ public class MyApp extends Application {
                 HSSFSheet sheetTri1 = workbookTri1.getSheetAt(i);
                 System.out.println("hh =" + sheetCible.getSheetName());
 
+                /* //TODO
                 if (sheetCible.getRow(7).getCell(0).getStringCellValue().isEmpty()
                         || sheetCible.getSheetName().equals("الواجهة")) {
                     break;
                 }
 
+                //*/
+
                 FileOutputStream fos = new FileOutputStream(fileResult);
                 //FileOutputStream fos = new FileOutputStream(file);
-                int r = 8;
+                int r = 8; // old: r = 8;
 
-                while (!sheetCible.getRow(r).getCell(1).getStringCellValue().isEmpty()) {
+                Iterator<Row> rowIterator = sheetCible.rowIterator();
 
-                    System.out.println(" row num " + r);
-                    System.out.println(" sheetCible.getRow(r).getCell(1).getStringCellValue() " + sheetCible.getRow(r).getCell(1).getStringCellValue());
-                    HSSFCell cellCible = sheetCible.getRow(r).getCell(3);
+                while (rowIterator.hasNext()) {
+                    Row row = rowIterator.next();
 
-                    note1 = sheetCible.getRow(r).getCell(3).getNumericCellValue();
+                //while (!sheetCible.getRow(r).getCell(1).getStringCellValue().isEmpty()) {
+                    if (row.getRowNum() >= 8) {
+                        System.out.println(" row num " + r);
+                        System.out.println(" sheetCible.getRow(r).getCell(1).getStringCellValue() " + sheetCible.getRow(r).getCell(1).getStringCellValue());
+                        HSSFCell cellCible = sheetCible.getRow(r).getCell(4); //old: = sheetCible.getRow(r).getCell(3);
 
-                    note3 = sheetCible.getRow(r).getCell(5).getNumericCellValue();
-                    note4 = sheetCible.getRow(r).getCell(6).getNumericCellValue();
+                        note1 = sheetCible.getRow(r).getCell(4).getNumericCellValue();//old = sheetCible.getRow(r).getCell(3)
 
-                    HSSFCell cellb = sheetTri1.getRow(r).getCell(3);
+                        note3 = sheetCible.getRow(r).getCell(6).getNumericCellValue(); // old .getCell(5)
+                        note4 = sheetCible.getRow(r).getCell(7).getNumericCellValue(); // old .getCell(6)
 
-                    note1b = sheetTri1.getRow(r).getCell(3).getNumericCellValue();
+                        HSSFCell cellb = sheetTri1.getRow(r).getCell(4); //old .getCell(3)
 
-                    note3b = sheetTri1.getRow(r).getCell(5).getNumericCellValue();
-                    note4b = sheetTri1.getRow(r).getCell(6).getNumericCellValue();
+                        note1b = sheetTri1.getRow(r).getCell(4).getNumericCellValue(); //old .getCell(3)
 
-                    //if (sheetCible.getRow(r).getCell(4).getNumericCellValue() != 0) {//TODO
-                    if (sheetCible.getRow(r).getCell(4).getCellTypeEnum() != CellType.NUMERIC) {//TODO
-                        //if (sheetCible.getRow(r).getCell(4) == null || sheetCible.getRow(r).getCell(4).getCellTypeEnum() == CellType.BLANK) {
-                        moy = (note1 + note3 + (note4 * 2)) / 4;
-                        moyb = (note1b + note3b + (note4b * 2)) / 4;
+                        note3b = sheetTri1.getRow(r).getCell(6).getNumericCellValue(); //old .getCell(6)
+                        note4b = sheetTri1.getRow(r).getCell(7).getNumericCellValue(); //old .getCell(6)
 
-                    } else {
-                        note2 = sheetCible.getRow(r).getCell(4).getNumericCellValue();
-                        moy = (note1 + note2 + note3 + (note4 * 2)) / 5;
-                        note2b = sheetTri1.getRow(r).getCell(4).getNumericCellValue();
-                        moyb = (note1b + note2b + note3b + (note4b * 2)) / 5;
+                        //if (sheetCible.getRow(r).getCell(4).getNumericCellValue() != 0) {//TODO
+                        if (sheetCible.getRow(r).getCell(5).getCellTypeEnum() != CellType.NUMERIC) {// old .getCell(4)
+                            //if (sheetCible.getRow(r).getCell(4) == null || sheetCible.getRow(r).getCell(4).getCellTypeEnum() == CellType.BLANK) {
+                            moy = (note1 + note3 + (note4 * 2)) / 4;
+                            moyb = (note1b + note3b + (note4b * 2)) / 4;
+
+                        } else {
+                            note2 = sheetCible.getRow(r).getCell(5).getNumericCellValue(); //old .getCell(4)
+                            moy = (note1 + note2 + note3 + (note4 * 2)) / 5;
+                            note2b = sheetTri1.getRow(r).getCell(5).getNumericCellValue(); //old .getCell(4)
+                            moyb = (note1b + note2b + note3b + (note4b * 2)) / 5;
+                        }
+
+                        sheetCible.getRow(r).getCell(8).setCellValue(listTak[((int) moy)]); //old .getCell(7)
+                        sheetCible.getRow(r).getCell(9).setCellValue(irchadateByCompare(moyb, moy)); //old .getCell(8)
+
+                        //}
+
+
+                        r++;
+
                     }
-
-                    sheetCible.getRow(r).getCell(7).setCellValue(listTak[((int) moy)]);
-                    sheetCible.getRow(r).getCell(8).setCellValue(irchadateByCompare(moyb, moy));
-
-                    //}
-
-
-                    r++;
-
 
                 }
 
@@ -259,43 +271,58 @@ public class MyApp extends Application {
             int nbstudents = 0;
             System.out.println("NumberOfSheets  = " + workbook.getNumberOfSheets());
 
-            for (int i = 0; i < workbook.getNumberOfSheets() - 3; i++) {
+            //for (int i = 0; i < workbook.getNumberOfSheets() - 3; i++) { // old version files
+
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+
                 System.out.println("i  = " + i);
 
 
                 HSSFSheet sheet = workbook.getSheetAt(i);
                 FileOutputStream fos = new FileOutputStream(fileResult);
                 //FileOutputStream fos = new FileOutputStream(file);
-                int r = 8;
+                int r = 8; // r = 8
 
-                while (!sheet.getRow(r).getCell(1).getStringCellValue().isEmpty()) {
-                    nbstudents++;
-                    System.out.println(" row num " + r);
-                    HSSFCell cell = sheet.getRow(r).getCell(3);
-                    note1 = sheet.getRow(r).getCell(3).getNumericCellValue();
+                //Cell ccc = sheet.getRow(34).getCell(1);
 
-                    note3 = sheet.getRow(r).getCell(5).getNumericCellValue();
-                    note4 = sheet.getRow(r).getCell(6).getNumericCellValue();
+                //System.out.println(sheet.getRow(34));
+                //System.out.println(sheet.getRow(34).getCell(1).getStringCellValue());
+                Iterator<Row> rowIterator = sheet.rowIterator();
+
+                while (rowIterator.hasNext()) {
+                    Row row = rowIterator.next();
+                    if (row.getRowNum() >= 8) {
+                        //while (!sheet.getRow(r).getCell(1).getStringCellValue().isEmpty()) {  //old version of files
+                        nbstudents++;
+                        System.out.println(" row num " + r);
+                        HSSFCell cell = sheet.getRow(r).getCell(4); //old .getCell(3)
+                        //double ml = Double.parseDouble(sheet.getRow(r).getCell(4).getStringCellValue());
+                        //System.out.println(sheet.getRow(r).getCell(4).getStringCellValue());
+                        //System.out.println("nokta = " + sheet.getRow(r).getCell(4).getStringCellValue());
+                        note1 = sheet.getRow(r).getCell(4).getNumericCellValue(); //old .getCell(3)
+
+                        note3 = sheet.getRow(r).getCell(6).getNumericCellValue(); //old .getCell(5)
+                        note4 = sheet.getRow(r).getCell(7).getNumericCellValue(); //old .getCell(6)
 
 
-                    if (sheet.getRow(r).getCell(4).getCellTypeEnum() == CellType.NUMERIC) {//TODO
-                        note2 = sheet.getRow(r).getCell(4).getNumericCellValue();
-                        moy = (note1 + note2 + note3 + (note4 * 2)) / 5;
-                    } else {
-                        moy = (note1 + note3 + (note4 * 2)) / 4;
+                        if (sheet.getRow(r).getCell(5).getCellTypeEnum() == CellType.NUMERIC) { //old .getCell(4)
+                            note2 = sheet.getRow(r).getCell(5).getNumericCellValue(); //old .getCell(4)
+                            moy = (note1 + note2 + note3 + (note4 * 2)) / 5;
+                        } else {
+                            moy = (note1 + note3 + (note4 * 2)) / 4;
+                        }
+                        System.out.println(moy);
+                        //if (nbstudents < 96) {
+
+                        sheet.getRow(r).getCell(8).setCellValue(listTak[(int) moy]); //old .getCell(7)
+                        sheet.getRow(r).getCell(9).setCellValue(listIrch[(int) moy]); //old .getCell(8)
+
+                        //}
+
+                        System.out.println("number students = " + nbstudents);
+
+                        r++;
                     }
-                    System.out.println(moy);
-                    //if (nbstudents < 96) {
-
-                    sheet.getRow(r).getCell(7).setCellValue(listTak[(int) moy]);
-                    sheet.getRow(r).getCell(8).setCellValue(listIrch[(int) moy]);
-
-                    //}
-
-                    System.out.println("number students = " + nbstudents);
-
-                    r++;
-
                 }
 
                 workbook.write(fos);
