@@ -7,6 +7,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import main.BasicScene;
+import main.GlobalResult;
 import main.MyApp;
 
 import java.awt.*;
@@ -63,13 +64,17 @@ public class TwoFilesController {
 
         if (MyApp.selectedFile != null) {
             if (!MyApp.configLists()) return;
-            File res = MyApp.process_with_compare(MyApp.selectedOldFile, MyApp.selectedFile);
+            GlobalResult gr = MyApp.process_with_compare(MyApp.selectedOldFile, MyApp.selectedFile);
+
+            File resFile = gr.getExcelResult();
+            File analyseFile = gr.getAnalyseFile();
             //TODO for twoFiles
             //String s = MyApp.process_with_compare(null, MyApp.selectedFile).getName();
-            messageLabel.setText("تم إنشاء الملف المعالج بنجاح \"" + res.getName() + "\"");
+            messageLabel.setText("تم إنشاء الملف المعالج بنجاح \"" + resFile.getName() + "\"");
             try {
                 //wait(3000);
-                Desktop.getDesktop().open(res);
+                Desktop.getDesktop().open(resFile);
+                Desktop.getDesktop().open(analyseFile);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -41,13 +41,15 @@ public class OneFileController {
 
         if (MyApp.selectedFile != null) {
             if (!MyApp.configLists()) return;
-            File res = MyApp.process(MyApp.selectedFile);
+            File res = MyApp.process(MyApp.selectedFile).getExcelResult();
+            File resAnalyseFile = MyApp.process(MyApp.selectedFile).getAnalyseFile();
             //TODO for twoFiles
             //String s = MyApp.process_with_compare(null, MyApp.selectedFile).getName();
             messageLabel.setText("تم إنشاء الملف المعالج بنجاح \"" + res.getName() + "\"");
             try {
                 //wait(3000);
                 Desktop.getDesktop().open(res);
+                Desktop.getDesktop().open(resAnalyseFile);
             } catch (IOException e) {
                 e.printStackTrace();
             }

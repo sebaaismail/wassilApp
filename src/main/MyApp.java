@@ -7,9 +7,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -18,12 +16,15 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.text.DecimalFormat;
 import java.util.Iterator;
 
 public class MyApp extends Application {
 
     public static File selectedFile;
     public static File selectedOldFile;
+
+    public static HSSFSheet analyseSheet, analyseExSheet;
 
     private static String[] listTak;
     private static String[] listIrch;
@@ -36,7 +37,12 @@ public class MyApp extends Application {
     private static double note2;
     private static double note3;
     private static double note4;
-    private static double moy = 0.0d;
+
+    private static String id;
+    private static String fullName;
+
+    //private static double moy, moyClasse, maxMoy, minMoy = 0.0d;
+    private static double moy;
     private static double note1b;
     private static double note2b;
     private static double note3b;
@@ -121,7 +127,10 @@ public class MyApp extends Application {
         return true;
     }
 
-    public static File process_with_compare(File fileTri1, File fileCible) {
+    public static GlobalResult process_with_compare(File fileTri1, File fileCible) {
+
+        GlobalResult globalRes = new GlobalResult();
+        Student student = new Student();
 
         String fileName = fileCible.getName();
         System.out.println("absolute path : " + fileCible.getPath());
@@ -130,6 +139,8 @@ public class MyApp extends Application {
         fileName = fileCible.getParentFile() + "\\" + fileName.substring(0, lastDot) + " + التقديرات" + fileName.substring(lastDot);
 
         File fileResult = new File(fileName);
+        File fileAnalyse = new File(fileCible.getParentFile() + "\\" + "تحليل النتائج.xls");
+
         HSSFWorkbook workbookTri1;
         HSSFWorkbook workbookCible = null;
         try {
@@ -140,7 +151,23 @@ public class MyApp extends Application {
             workbookTri1 = new HSSFWorkbook(fisTri1);
             workbookCible = new HSSFWorkbook(fisCible);
 
-            for (int i = 0; i < workbookCible.getNumberOfSheets(); i++) {
+            HSSFWorkbook workbookAnalyse = new HSSFWorkbook();
+
+            HSSFCellStyle style = workbookAnalyse.createCellStyle();
+            style.setDataFormat(workbookAnalyse.createDataFormat().getFormat("0.00"));
+
+            analyseSheet = workbookAnalyse.createSheet("تحليل النتائج العامة");
+            analyseSheet.setRightToLeft(true);
+
+            analyseExSheet = workbookAnalyse.createSheet("تحليل نتائج الإختبار");
+            analyseExSheet.setRightToLeft(true);
+
+            //Iterate classes
+            for (int i = 0; i < workbookCible.getNumberOfSheets(); i++) {// for each i there is classe
+
+                ClasseResult classeRes = new ClasseResult();
+                classeRes.setDown(0);
+                classeRes.setUp(0);
 
 
                 HSSFSheet sheetCible = workbookCible.getSheetAt(i);
@@ -156,9 +183,11 @@ public class MyApp extends Application {
                 //*/
 
                 FileOutputStream fos = new FileOutputStream(fileResult);
-                //FileOutputStream fos = new FileOutputStream(file);
+                FileOutputStream fosAnalyse = new FileOutputStream(fileAnalyse);
+
                 int r = 8; // old: r = 8;
 
+                //iterate students
                 Iterator<Row> rowIterator = sheetCible.rowIterator();
 
                 while (rowIterator.hasNext()) {
@@ -166,10 +195,15 @@ public class MyApp extends Application {
 
                 //while (!sheetCible.getRow(r).getCell(1).getStringCellValue().isEmpty()) {
                     if (row.getRowNum() >= 8) {
+
+                        student = new Student();
                         System.out.println(" row num " + r);
                         System.out.println(" sheetCible.getRow(r).getCell(1).getStringCellValue() " + sheetCible.getRow(r).getCell(1).getStringCellValue());
                         HSSFCell cellCible = sheetCible.getRow(r).getCell(4); //old: = sheetCible.getRow(r).getCell(3);
 
+                        id = sheetCible.getRow(r).getCell(0).getStringCellValue();
+                        fullName = sheetCible.getRow(r).getCell(1).getStringCellValue() + " " +
+                                sheetCible.getRow(r).getCell(2).getStringCellValue();
                         note1 = sheetCible.getRow(r).getCell(4).getNumericCellValue();//old = sheetCible.getRow(r).getCell(3)
 
                         note3 = sheetCible.getRow(r).getCell(6).getNumericCellValue(); // old .getCell(5)
@@ -187,6 +221,7 @@ public class MyApp extends Application {
                             //if (sheetCible.getRow(r).getCell(4) == null || sheetCible.getRow(r).getCell(4).getCellTypeEnum() == CellType.BLANK) {
                             moy = (note1 + note3 + (note4 * 2)) / 4;
                             moyb = (note1b + note3b + (note4b * 2)) / 4;
+                            student.setNoteTp(note2);
 
                         } else {
                             note2 = sheetCible.getRow(r).getCell(5).getNumericCellValue(); //old .getCell(4)
@@ -195,23 +230,45 @@ public class MyApp extends Application {
                             moyb = (note1b + note2b + note3b + (note4b * 2)) / 5;
                         }
 
+                        student.setId(id);
+                        student.setFullName(fullName);
+                        student.setNoteCont(note1);
+                        student.setNoteDev(note3);
+                        student.setNoteEx(note4);
+                        student.setMoy(moy);
+
+                        classeRes.addStudent(student);
+
                         sheetCible.getRow(r).getCell(8).setCellValue(listTak[((int) moy)]); //old .getCell(7)
                         sheetCible.getRow(r).getCell(9).setCellValue(irchadateByCompare(moyb, moy)); //old .getCell(8)
 
+                        if (moy-moyb >= 2) {
+                            classeRes.setUp(classeRes.getUp()+1);
+                        } else if (moyb - moy >= 2) {
+                            classeRes.setDown(classeRes.getDown()+1);
+                        }
                         //}
 
-
+                        globalRes.add(classeRes);
                         r++;
 
                     }
 
                 }
 
+                classeRes.process();
+                writeTab(sheetCible,analyseSheet, classeRes, r, i);
+                writeTab(sheetCible,analyseExSheet, classeRes, r, i);
+
                 workbookCible.write(fos);
                 fos.close();
+                workbookAnalyse.write(fosAnalyse);
+                fosAnalyse.close();
 
                 //messageLabel.setText("تم إنشاء الملف المعالج بنجاح \""+ fileResult.getName() + "\"");
             }
+            globalRes.setExcelResult(fileResult);
+            globalRes.setAnalyseFile(fileAnalyse);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -223,7 +280,7 @@ public class MyApp extends Application {
             e.printStackTrace();
         }
 
-        return fileResult;
+        return globalRes;
     }
 
     private static String irchadateByCompare(double moyTri1, double moyTri2) {
@@ -241,7 +298,10 @@ public class MyApp extends Application {
     }
 
     //************************************************************
-    public static File process(File file) {
+    public static GlobalResult process(File file) {
+
+        GlobalResult globalRes = new GlobalResult();
+        Student student = new Student();
 
         String fileName = file.getName();
         System.out.println("absolute path : " + file.getParentFile());
@@ -251,13 +311,28 @@ public class MyApp extends Application {
 
         File fileResult = new File(fileName);
 
+        File fileAnalyse = new File(file.getParentFile() + "\\" + "تحليل النتائج.xls");
+
+
         FileInputStream fis = null;
+
+
         try {
             fis = new FileInputStream(file);
 
 
             //Get the workbook instance for XLSX file
             HSSFWorkbook workbook = new HSSFWorkbook(fis);
+            HSSFWorkbook workbookAnalyse = new HSSFWorkbook();
+
+            HSSFCellStyle style = workbookAnalyse.createCellStyle();
+            style.setDataFormat(workbookAnalyse.createDataFormat().getFormat("0.00"));
+
+            analyseSheet = workbookAnalyse.createSheet("تحليل النتائج العامة");
+            analyseSheet.setRightToLeft(true);
+
+            analyseExSheet = workbookAnalyse.createSheet("تحليل نتائج الإختبار");
+            analyseExSheet.setRightToLeft(true);
 
 
             if (file.isFile() && file.exists()) {
@@ -273,13 +348,24 @@ public class MyApp extends Application {
 
             //for (int i = 0; i < workbook.getNumberOfSheets() - 3; i++) { // old version files
 
-            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+            //iterate classes
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) { // for each i there is classe
+
+                ClasseResult classeRes = new ClasseResult();
 
                 System.out.println("i  = " + i);
 
+//                HSSFSheet analyseSheet = workbookAnalyse.createSheet("تحليل النتائج" + i);
+//                analyseSheet.setRightToLeft(true);
+
 
                 HSSFSheet sheet = workbook.getSheetAt(i);
+
+
+
+
                 FileOutputStream fos = new FileOutputStream(fileResult);
+                FileOutputStream fosAnalyse = new FileOutputStream(fileAnalyse);
                 //FileOutputStream fos = new FileOutputStream(file);
                 int r = 8; // r = 8
 
@@ -289,47 +375,71 @@ public class MyApp extends Application {
                 //System.out.println(sheet.getRow(34).getCell(1).getStringCellValue());
                 Iterator<Row> rowIterator = sheet.rowIterator();
 
+                //iterate students
                 while (rowIterator.hasNext()) {
+
                     Row row = rowIterator.next();
                     if (row.getRowNum() >= 8) {
                         //while (!sheet.getRow(r).getCell(1).getStringCellValue().isEmpty()) {  //old version of files
                         nbstudents++;
+                        student = new Student();
+
                         System.out.println(" row num " + r);
                         HSSFCell cell = sheet.getRow(r).getCell(4); //old .getCell(3)
-                        //double ml = Double.parseDouble(sheet.getRow(r).getCell(4).getStringCellValue());
-                        //System.out.println(sheet.getRow(r).getCell(4).getStringCellValue());
-                        //System.out.println("nokta = " + sheet.getRow(r).getCell(4).getStringCellValue());
+
+                        id = sheet.getRow(r).getCell(0).getStringCellValue();
+                        fullName = sheet.getRow(r).getCell(1).getStringCellValue() + " " +
+                                    sheet.getRow(r).getCell(2).getStringCellValue();
                         note1 = sheet.getRow(r).getCell(4).getNumericCellValue(); //old .getCell(3)
 
                         note3 = sheet.getRow(r).getCell(6).getNumericCellValue(); //old .getCell(5)
                         note4 = sheet.getRow(r).getCell(7).getNumericCellValue(); //old .getCell(6)
 
-
                         if (sheet.getRow(r).getCell(5).getCellTypeEnum() == CellType.NUMERIC) { //old .getCell(4)
                             note2 = sheet.getRow(r).getCell(5).getNumericCellValue(); //old .getCell(4)
+                            student.setNoteTp(note2);
                             moy = (note1 + note2 + note3 + (note4 * 2)) / 5;
                         } else {
                             moy = (note1 + note3 + (note4 * 2)) / 4;
                         }
-                        System.out.println(moy);
-                        //if (nbstudents < 96) {
 
+                        student.setId(id);
+                        student.setFullName(fullName);
+                        student.setNoteCont(note1);
+                        student.setNoteDev(note3);
+                        student.setNoteEx(note4);
+                        student.setMoy(moy);
+
+                        classeRes.addStudent(student);
+
+                        //TODO important
+
+                        System.out.println(fullName + " , moy = " + moy);
+                        //if (nbstudents < 96) {
                         sheet.getRow(r).getCell(8).setCellValue(listTak[(int) moy]); //old .getCell(7)
                         sheet.getRow(r).getCell(9).setCellValue(listIrch[(int) moy]); //old .getCell(8)
-
                         //}
-
                         System.out.println("number students = " + nbstudents);
-
+                        globalRes.add(classeRes);
                         r++;
                     }
+
                 }
+
+                classeRes.process();
+                writeTab(sheet,analyseSheet, classeRes, r, i);
+                writeTab(sheet,analyseExSheet, classeRes, r, i);
 
                 workbook.write(fos);
                 fos.close();
 
+                workbookAnalyse.write(fosAnalyse);
+                fosAnalyse.close();
+
                 //messageLabel.setText("تم إنشاء الملف المعالج بنجاح \""+ fileResult.getName() + "\"");
             }
+            globalRes.setExcelResult(fileResult);
+            globalRes.setAnalyseFile(fileAnalyse);
         } catch (FileNotFoundException e) {
             Alert alrt2 = new Alert(Alert.AlertType.WARNING);
             alrt2.setHeaderText(null);
@@ -339,7 +449,109 @@ public class MyApp extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return fileResult;
+        return globalRes;
+    }
+
+    private static void writeTab(HSSFSheet sheet,HSSFSheet analyseSheet, ClasseResult classeRes, int r, int i) {
+
+        HSSFCell cellC, cellD, cellE, cellF, cellH, cellJ, cellK, cellL, cellM;
+        HSSFCell cellC2, cellD2, cellE2, cellF2, cellH2, cellJ2, cellK2, cellL2, cellM2;
+
+        System.out.println("moyClass = " + classeRes.getMoyClasse() + "nbre etudiant : " +  (r-8));
+        classeRes.setMoyClasse(classeRes.getMoyClasse()/(r-8));
+        //DecimalFormat dec = new DecimalFormat("#.00");
+        //moyClasse = Double.valueOf(dec.format(moyClasse));
+
+        HSSFRow row4 = analyseSheet.createRow(4 + (i*7));
+        HSSFRow row5 = analyseSheet.createRow(5 + (i*7));
+        HSSFRow row6 = analyseSheet.createRow(6 + (i*7));
+
+        int[] tab = classeRes.getAnalyseExTab();
+        if (analyseSheet.getSheetName().equals("تحليل النتائج العامة")) {
+            tab = classeRes.getAnalyseTab();
+
+            if (classeRes.getDown() != -1) {
+                cellL = row4.createCell(11);
+                cellL.setCellValue("\u200F" + "عدد التلاميذ المتراجعين");
+
+                cellM = row4.createCell(12);
+                cellM.setCellValue("\u200F" + "عدد التلاميذ الذين تحسنت نتائجهم");
+
+                cellL2 = row5.createCell(11);
+                cellL2.setCellValue("\u200F" + classeRes.getDown());
+
+                cellM2 = row5.createCell(12);
+                cellM2.setCellValue("\u200F" + classeRes.getUp());
+
+            }
+
+
+        }
+
+        if (sheet.getRow(4) != null) {
+
+
+
+            cellC = row4.createCell(2);
+            cellC.setCellValue("\u200F" + "00 - 7,99");
+
+            cellD = row4.createCell(3);
+            cellD.setCellValue("\u200F" + "08 - 9,99");
+
+            cellE = row4.createCell(4);
+            cellE.setCellValue("\u200F" + "10 - 14,99");
+
+            cellF = row4.createCell(5);
+            cellF.setCellValue("\u200F" + "15 - 20");
+
+            cellH = row4.createCell(7);
+            cellH.setCellValue("\u200F" + "معدل القسم");
+
+            cellJ = row4.createCell(9);
+            cellJ.setCellValue("\u200F" + "أعلى معدل");
+
+            cellK = row4.createCell(10);
+            cellK.setCellValue("\u200F" + "أدنى معدل");
+
+            cellC2 = row5.createCell(2);
+            cellC2.setCellValue("\u200F" + tab[0]);
+
+            cellD2 = row5.createCell(3);
+            cellD2.setCellValue("\u200F" + tab[1]);
+
+            cellE2 = row5.createCell(4);
+            cellE2.setCellValue("\u200F" + tab[2]);
+
+            cellF2 = row5.createCell(5);
+            cellF2.setCellValue("\u200F" + tab[3]);
+
+            cellH2 = row5.createCell(7);
+            cellH2.setCellValue("\u200F" + classeRes.getMoyClasse());
+
+            cellJ2 = row5.createCell(9);
+            cellJ2.setCellValue("\u200F" + classeRes.getMaxMoy());
+
+            cellK2 = row5.createCell(10);
+            cellK2.setCellValue("\u200F" + classeRes.getMinMoy());
+
+            double perc = (double)(classeRes.getAnalyseTab()[2] + classeRes.getAnalyseTab()[3])*100
+                    / (classeRes.getAnalyseTab()[0] + classeRes.getAnalyseTab()[1]
+            + classeRes.getAnalyseTab()[2] + classeRes.getAnalyseTab()[3]);
+            cellH2 = row6.createCell(7);
+            cellH2.setCellValue("\u200F" + perc + " %");
+
+
+
+            String str = sheet.getRow(4).getCell(0).getStringCellValue();
+            int word1 = str.indexOf("الفوج التربوي :");
+            String name = str.substring(word1, str.indexOf("مادة : "));
+            System.out.println(name);
+
+            HSSFRow row2 = analyseSheet.createRow(2 + (i * 7));
+            HSSFCell cc = row2.createCell(0);
+            cc.setCellValue(name);
+        }
+
     }
 
     private static String getNoteFromFile(double moy, File file) {
