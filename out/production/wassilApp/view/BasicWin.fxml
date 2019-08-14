@@ -5,8 +5,13 @@
     <Tab fx:id="tab1" text="الفصل الأول">
         <fx:include fx:id="oneFile" source="OneFile.fxml"></fx:include>
     </Tab>
+
     <Tab fx:id="tab2" text="المعالجة بالمقارنة مع نتائج سابقة">
-        <fx:include source="TwoFile.fxml"></fx:include>
+    <fx:include source="TwoFile.fxml"></fx:include>
+    </Tab>
+
+    <Tab fx:id="tab3" text="تقسيم الأفواج">
+        <fx:include source="MakingGroups.fxml"></fx:include>
     </Tab>
 
 </TabPane>

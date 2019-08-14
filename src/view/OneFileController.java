@@ -7,6 +7,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import main.BasicScene;
+import main.GlobalResult;
 import main.MyApp;
 
 import java.awt.*;
@@ -41,8 +42,9 @@ public class OneFileController {
 
         if (MyApp.selectedFile != null) {
             if (!MyApp.configLists()) return;
-            File res = MyApp.process(MyApp.selectedFile).getExcelResult();
-            File resAnalyseFile = MyApp.process(MyApp.selectedFile).getAnalyseFile();
+            GlobalResult gr = MyApp.process(MyApp.selectedFile);
+            File res = gr.getExcelResult();
+            File resAnalyseFile = gr.getAnalyseFile();
             //TODO for twoFiles
             //String s = MyApp.process_with_compare(null, MyApp.selectedFile).getName();
             messageLabel.setText("تم إنشاء الملف المعالج بنجاح \"" + res.getName() + "\"");

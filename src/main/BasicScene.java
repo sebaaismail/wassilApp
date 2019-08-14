@@ -37,6 +37,7 @@ public class BasicScene extends Scene {
 
         VBox vBox = null;
         TabPane tp = null;
+
         try {
             InfoController cont = new InfoController();
             BasicWinController cont2 = new BasicWinController();
@@ -56,44 +57,7 @@ public class BasicScene extends Scene {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //*/
-        /*
-        VBox vBox = new VBox();
-        Pane blankPane = new Pane();
-        blankPane.setMinHeight(0.15 * screenSize.getHeight());
-        try {
-            this.getStylesheets().add(MyApp.class.getResource("myStyle.css").toExternalForm());
-            logo = new Image(new FileInputStream("files/logo.png"));
-            info = new Image(new FileInputStream("files/info.png"));
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        ImageView iv1 = new ImageView(logo);
-        ImageView iv2 = new ImageView(info);
-
-
-
-        vBox.setMaxWidth(0.25 * screenSize.getWidth());
-        //iv2.setFitWidth(vBox.getWidth());
-        //iv2.setFitWidth(0.25 * screenSize.getWidth());
-        iv2.setPreserveRatio(true);
-        //iv2.setSmooth(true);
-        //iv2.setCache(true);
-
-        vBox.setAlignment(Pos.TOP_CENTER);
-        //vBox.setSpacing(0.2 * screenSize.getHeight());
-
-        TextField textField = new TextField("by: sebaa.ismail@gmail.com           ©2018");
-        textField.setEditable(false);
-        textField.setFocusTraversable(false);
-
-        vBox.getChildren().add(iv1);
-        vBox.getChildren().add(blankPane);
-        vBox.getChildren().add(iv2);
-        vBox.getChildren().add(textField);
-        //*/
         border.setCenter(tp);
         border.setRight(vBox);
 

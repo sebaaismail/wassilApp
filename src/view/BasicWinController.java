@@ -21,11 +21,16 @@ public class BasicWinController {
     @FXML
     private Tab tab1 = new Tab();
     @FXML
+    private Tab tab2 = new Tab();
+    @FXML
+    private Tab tab3 = new Tab();
+
+    @FXML
     private OneFileController oneFileController;
     @FXML
     private TwoFilesController twoFilesController;
     @FXML
-    private Tab tab2 = new Tab();
+    private MakingGroupsController makingGroupsController;
 
     private void initialize() {
         //this.textField.setText("wiwwwwwwwwwwwwww");
