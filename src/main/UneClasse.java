@@ -3,7 +3,7 @@ package main;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.ss.usermodel.CellType;
+import seatsPlan.main.ComputerMembers;
 
 import java.util.ArrayList;
 
@@ -22,6 +22,9 @@ public class UneClasse {
     private Student bestStudent, worstStudent;
     private boolean hasNoteTP;
 
+    private ArrayList<ComputerMembers> listCMA;
+    private ArrayList<ComputerMembers> listCMB;
+
 
     private int down = -1, up = -1;
 
@@ -30,6 +33,7 @@ public class UneClasse {
     private static double note3b;
     private static double note4b;
     private static double moyb = 0.0d;
+
 
     public UneClasse() {
         this.analyseTab = new int[4];
@@ -229,6 +233,22 @@ public class UneClasse {
         this.groupeB = groupeB;
     }
 
+    public ArrayList<ComputerMembers> getListCMA() {
+        return listCMA;
+    }
+
+    public void setListCMA(ArrayList<ComputerMembers> listCMA) {
+        this.listCMA = listCMA;
+    }
+
+    public ArrayList<ComputerMembers> getListCMB() {
+        return listCMB;
+    }
+
+    public void setListCMB(ArrayList<ComputerMembers> listCMB) {
+        this.listCMB = listCMB;
+    }
+
     private void writeTab(HSSFSheet sheet, HSSFSheet analyseSheet, int r, int i) {
 
 
@@ -331,4 +351,8 @@ public class UneClasse {
     }
 
 
+    public void setMaps(ArrayList<ComputerMembers> listCMA, ArrayList<ComputerMembers> listCMB) {
+        this.listCMA = listCMA;
+        this.listCMB = listCMB;
+    }
 }

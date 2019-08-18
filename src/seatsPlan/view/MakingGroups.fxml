@@ -2,7 +2,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <GridPane xmlns:fx="http://javafx.com/fxml" fx:id="gp" alignment="CENTER" vgap="15"
-          fx:controller="view.MakingGroupsController">
+          fx:controller="seatsPlan.view.MakingGroupsController">
     <Pane fx:id="pane" GridPane.columnIndex="0" GridPane.rowIndex="0">
 
     </Pane>

@@ -1,4 +1,4 @@
-package view;
+package seatsPlan.view;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -8,12 +8,13 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import main.BasicScene;
 import main.GlobalResult;
-import main.GroupsMaker;
+import seatsPlan.main.GroupsMaker;
 import main.MyApp;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created by Ismail on 26/12/2018.
@@ -86,11 +87,21 @@ public class MakingGroupsController {
         if (MyApp.selectedPreparedFile != null) {
             GroupsMaker gm = new GroupsMaker(MyApp.selectedPreparedFile);
             File pre = gm.run();
+            ArrayList<File> mapPdfs = gm.createPdfs();
 
          messageLabel.setText("تم إنشاء ملف تحضير الأفواج \"" + pre.getName() + "\"");
         try {
             //wait(3000);
-            Desktop.getDesktop().open(pre);
+            //Desktop.getDesktop().open(pre);
+            Desktop.getDesktop().open(mapPdfs.get(0));//test
+
+            /*
+            for (File f:mapPdfs) {
+                if(f != null){
+                    Desktop.getDesktop().open(f);
+                }
+            }
+            //*/
             return pre;
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,4 +1,6 @@
-package main;
+package seatsPlan.main;
+
+import main.Student;
 
 import java.util.ArrayList;
 

@@ -1,5 +1,24 @@
-package main;
+package seatsPlan.main;
 
+
+import com.itextpdf.io.font.FontConstants;
+import com.itextpdf.io.font.PdfEncodings;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
+import com.itextpdf.layout.Document;
+
+
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Text;
+import com.itextpdf.layout.property.BaseDirection;
+import com.itextpdf.licensekey.LicenseKey;
+import main.Student;
+import main.UneClasse;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -7,18 +26,22 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
+import seatsPlan.main.ComputerMembers;
+import seatsPlan.view.HtmlSource;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
+
+
 
 /**
  * Created by Ismail on 12/08/2019.
  */
 public class GroupsMaker {
     private File preparedFile;
+    private ArrayList<UneClasse> classesList = new ArrayList<>();
 
 
     public GroupsMaker(File file){
@@ -30,7 +53,7 @@ public class GroupsMaker {
     public File run(){
 
         Student student;
-        UneClasse classeRes;
+
         String fileName = preparedFile.getParentFile() + "\\" + this.preparedFile.getName().replace("تحضير", "");
 
         File fileResult = new File(fileName);
@@ -56,12 +79,13 @@ public class GroupsMaker {
             //iterate classes
             for (int i = 0; i < n; i++) { // for each i there is classe
 
-                classeRes = new UneClasse();
+                UneClasse classeRes = new UneClasse();
                 HSSFSheet sheet = workbook.getSheetAt(i);
                 String nameSheet = sheet.getSheetName();
                 workbook.setSheetName(i, "to Delete " + i);
 
                 HSSFSheet newSheet = workbook.createSheet(nameSheet);
+                classeRes.setNameClasse(nameSheet);
 
 
                 System.out.println("i  = " + i);
@@ -159,45 +183,10 @@ public class GroupsMaker {
                 Collections.sort(listCMA);
                 Collections.sort(listCMB);
 
-/*
+                classeRes.setMaps(listCMA, listCMB);
 
-                //TODO a refaire
-                int size = classeRes.getListStudents().size();
-                classeRes.setGroupeA(new ArrayList<>());
-                classeRes.setGroupeB(new ArrayList<>());
-                int j = 0;
+                classesList.add(classeRes);
 
-                ArrayList<ComputerMembers> listCMA = new ArrayList<ComputerMembers>();
-                ArrayList<ComputerMembers> listCMB = new ArrayList<ComputerMembers>();
-
-
-                for(int id = 1; id <=15; id++ ) {
-                    ComputerMembers pcMembrs = new ComputerMembers();
-                    pcMembrs.setIdComputer(-1);
-                    pcMembrs.setMembers(new ArrayList<>());
-                    listCMA.add(pcMembrs);
-                    listCMB.add(pcMembrs);
-
-                }
-
-                ComputerMembers cm;
-                for (Student st : classeRes.getListStudents()) {
-
-                    if (j < (size+1) / 2) {
-
-                        cm = addToCM(st, listCMA);
-                        cm.setGroup("A");
-
-                    } else {
-                        cm = addToCM(st, listCMB);
-                        cm.setGroup("B");
-                    }
-
-                    j++;
-                }
-//*/
-                //listCMA = redispatch(listCMA);
-                //listCMB = redispatch(listCMB);
 
                 CellStyle style = workbook.createCellStyle();
                 HSSFFont font =workbook.createFont();
@@ -339,21 +328,21 @@ public class GroupsMaker {
 
     private void dispatchStudents(ArrayList<Student> groupeX, ArrayList<ComputerMembers> listCMX) {
 
-        for(Student st:groupeX){
+        for (Student st : groupeX) {
             addToCM(st, listCMX);
         }
 
-        //equilibrer le poids nobre student / compute in term of male female
+        //equilibrer le poids nobre student / computer in term of male female
 
-        int nbH=0, nbF=0 , nbdoubleH=0 ,nbdoubleF=0;
+        int nbH = 0, nbF = 0, nbdoubleH = 0, nbdoubleF = 0;
         Student hst, fst = null;
         int idCReady;
-        for(ComputerMembers cm:listCMX){
-            if(cm.getMembers().size() == 2){
-                if(cm.getMembers().get(0).isMale()) nbdoubleH++;
+        for (ComputerMembers cm : listCMX) {
+            if (cm.getMembers().size() == 2) {
+                if (cm.getMembers().get(0).isMale()) nbdoubleH++;
                 else nbdoubleF++;
-            } else if(cm.getMembers().size() == 1){
-                if(cm.getMembers().get(0).isMale()) nbH++;
+            } else if (cm.getMembers().size() == 1) {
+                if (cm.getMembers().get(0).isMale()) nbH++;
                 else nbF++;
             }
         }
@@ -361,17 +350,18 @@ public class GroupsMaker {
         System.out.println("nbdoubleF : " + nbdoubleF + "nbdoubleH : " + nbdoubleH);
         System.out.println("nbF : " + nbF + "nbH : " + nbH);
         boolean equilibrated = false;
-        while((nbdoubleF + nbdoubleH) > 2 && !equilibrated) {
+        while ((nbdoubleF + nbdoubleH) >= 2 && !equilibrated) {
             System.out.println(" equilibrating ... ");
-            if(nbdoubleF - nbdoubleH > 2 && nbH > 3) {
+            if ((nbdoubleF - nbdoubleH > 2 && nbH > 3)
+                    || (nbdoubleF - nbdoubleH > 1 && (nbdoubleH + nbH) > (nbdoubleF + nbF))) {
                 outerloop:
-                for(ComputerMembers cm:listCMX){
-                    if(cm.getMembers().size()==2 && !cm.getMembers().get(0).isMale()) {
+                for (ComputerMembers cm : listCMX) {
+                    if (cm.getMembers().size() == 2 && !cm.getMembers().get(0).isMale()) {
                         fst = cm.getMembers().get(1);
                         cm.remove(fst);
                         nbdoubleF--;
-                        for(ComputerMembers cm2:listCMX){
-                            if(cm2.getMembers().size()==1 && cm2.getMembers().get(0).isMale()) {
+                        for (ComputerMembers cm2 : listCMX) {
+                            if (cm2.getMembers().size() == 1 && cm2.getMembers().get(0).isMale()) {
                                 hst = cm2.getMembers().get(0);
                                 cm2.remove(hst);
                                 cm2.add(fst);
@@ -379,8 +369,8 @@ public class GroupsMaker {
                                 nbH--;
                                 nbF++;
 
-                                for(ComputerMembers cm3:listCMX){
-                                    if(cm3.getMembers().size()==1 && cm3.getMembers().get(0).isMale()) {
+                                for (ComputerMembers cm3 : listCMX) {
+                                    if (cm3.getMembers().size() == 1 && cm3.getMembers().get(0).isMale()) {
                                         cm3.add(hst);
                                         nbdoubleH++;
                                         System.out.println(hst.getFullName() + " move place");
@@ -393,9 +383,7 @@ public class GroupsMaker {
                 }
 
 
-
-
-            } else{
+            } else {
                 equilibrated = true;
             }
         }
@@ -403,56 +391,56 @@ public class GroupsMaker {
 
         // seting id computer
         ArrayList listIds = new ArrayList();
-        for(ComputerMembers cm:listCMX){
-            if(cm.getMembers().size() == 2){
-                if(cm.getMembers().get(0).isMale()){
-                    for(int i = 1; i <=7; i=i+2){
-                        if(!listIds.contains(i)){
+        for (ComputerMembers cm : listCMX) {
+            if (cm.getMembers().size() == 2) {
+                if (cm.getMembers().get(0).isMale()) {
+                    for (int i = 1; i <= 7; i = i + 2) {
+                        if (!listIds.contains(i)) {
                             cm.setIdComputer(i);
                             listIds.add(i);
-                            System.out.println(cm.getMembers().get(0).getFullName() + " in pc num : " + i );
+                            System.out.println(cm.getMembers().get(0).getFullName() + " in pc num : " + i);
                             break;
-                        } else if(!listIds.contains(16-i)){
-                            cm.setIdComputer(16-i);
-                            listIds.add(16-i);
-                            System.out.println(cm.getMembers().get(0).getFullName() + " in pc num : " + (16-i) );
+                        } else if (!listIds.contains(16 - i)) {
+                            cm.setIdComputer(16 - i);
+                            listIds.add(16 - i);
+                            System.out.println(cm.getMembers().get(0).getFullName() + " in pc num : " + (16 - i));
                             break;
 
                         }
                     }
 
-                }else {//is female
-                    for(int i = 8; i >=2; i=i-2){
-                        if(!listIds.contains(i)){
+                } else {//is female
+                    for (int i = 8; i >= 2; i = i - 2) {
+                        if (!listIds.contains(i)) {
                             cm.setIdComputer(i);
                             listIds.add(i);
-                            System.out.println(cm.getMembers().get(0).getFullName() + " in pc num : " + i );
+                            System.out.println(cm.getMembers().get(0).getFullName() + " in pc num : " + i);
                             break;
-                        } else if(i > 2 && !listIds.contains(18-i)){
-                            cm.setIdComputer(18-i);
-                            listIds.add(18-i);
-                            System.out.println(cm.getMembers().get(0).getFullName() + " in pc num : " + (18-i) );
+                        } else if (i > 2 && !listIds.contains(18 - i)) {
+                            cm.setIdComputer(18 - i);
+                            listIds.add(18 - i);
+                            System.out.println(cm.getMembers().get(0).getFullName() + " in pc num : " + (18 - i));
                             break;
 
                         }
                     }
                 }
-            } else if(cm.getMembers().size() == 1){// size == 1
-                if(cm.getMembers().get(0).isMale()){
-                    for(int i=1; i<=8; i++){
-                        if(!listIds.contains(i)){
+            } else if (cm.getMembers().size() == 1) {// size == 1
+                if (cm.getMembers().get(0).isMale()) {
+                    for (int i = 1; i <= 8; i++) {
+                        if (!listIds.contains(i)) {
                             cm.setIdComputer(i);
                             listIds.add(i);
                             break;
-                        } else if(!listIds.contains(16-i)){
-                            cm.setIdComputer(16-i);
-                            listIds.add(16-i);
+                        } else if (!listIds.contains(16 - i)) {
+                            cm.setIdComputer(16 - i);
+                            listIds.add(16 - i);
                             break;
                         }
                     }
                 } else { // is female
-                    for(int i=1; i<=15; i++){
-                        if(!listIds.contains(i)){
+                    for (int i = 1; i <= 15; i++) {
+                        if (!listIds.contains(i)) {
                             cm.setIdComputer(i);
                             listIds.add(i);
                             break;
@@ -462,82 +450,60 @@ public class GroupsMaker {
             }
         }
 
+        //for the empty pcs with no students
+        for (ComputerMembers cm : listCMX) {
+            if (cm.getMembers().size() == 0) {
+                for(int i=1; i<=15; i++) {
+                    if (!listIds.contains(i)) {
+                        cm.setIdComputer(i);
+                        listIds.add(i);
+                        break;
+                    }
+                }
+            }
+        }
+
+        //TODO little adjustement crazy algorithme to fix when
+        //  first and second computers are for F but there is lot boyz
+        //*
+        if(nbdoubleH+nbH > 2){
+        int id;
+
+        for (int i = 0; i < (nbdoubleH+nbH)/2; i++) {
+            Collections.sort(listCMX);
+            ComputerMembers cm = listCMX.get(i);
+            id = cm.getIdComputer();
+            if (cm.getMembers().size() > 0 && !cm.getMembers().get(0).isMale()) {
+                System.out.println("classe of student" + listCMX.get(i).getMembers().get(0).getFullName());
+                System.out.println("here 111111111 looking place");
+                for (int j = 1; j < 7; j++) {
+
+                    if ((listCMX.get(8 - j).getMembers().size() > 0) && (listCMX.get(8 - j).getMembers().get(0).isMale()
+                            && (listCMX.get(8 - j).getMembers().size() == cm.getMembers().size()))) {
+                        System.out.println("here 22222222222 get changed to "+ (8-j));
+                        int idj = 8 - j + 1;
+                        listCMX.get(idj).setIdComputer(id);
+                        cm.setIdComputer(idj);
+                        Collections.sort(listCMX);
+                        break;
+
+                    } else if ((listCMX.get(8 + j).getMembers().size() > 0) && (listCMX.get(8 + j).getMembers().get(0).isMale()
+                            && (listCMX.get(8 + j).getMembers().size() == cm.getMembers().size()))) {
+                        System.out.println("here 333333333 get changed to "+ (8+j));
+                        int idj = 8 + j + 1;
+                        listCMX.get(8 + j).setIdComputer(id);
+                        cm.setIdComputer(idj);
+                        Collections.sort(listCMX);
+                        break;
+
+                    }
+
+
+                }
+            }
+        }
     }
-
-    private ArrayList<ComputerMembers> redispatch(ArrayList<ComputerMembers> listCM) {
-
-        int n = 0;
-        Student st;
-
-        for(ComputerMembers cm:listCM){
-            if(cm.getMembers().size() < 1) {
-                if(n%2 == 0){ //for males
-                    for(ComputerMembers cm2:listCM){
-                        if(cm2.getMembers().size() == 2 && cm2.getMembers().get(0).isMale()) {
-                            st = cm2.getMembers().get(0);
-                            cm2.remove(st);
-                            cm.add(st);
-                            n++;
-                            break;
-                        }
-                    }
-                } else{
-                    for(ComputerMembers cm2:listCM){
-                        if(cm2.getMembers().size() == 2 && !cm2.getMembers().get(0).isMale()) {
-                            st = cm2.getMembers().get(0);
-                            cm2.remove(st);
-                            cm.add(st);
-                            n++;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        // dispatching males / females
-        ArrayList  occupedPc = new ArrayList();
-        int id = 0;
-        for(ComputerMembers cm:listCM) {
-            if(cm.getMembers().size() > 0){ // for test TODO
-            if (cm.getMembers().get(0).isMale()) {
-                for (int i = 1; i <= 8; i++) {
-                    if (occupedPc.contains(i)) {
-                        if (occupedPc.contains(16 - i)) {
-                            break;
-                        } else {
-                            cm.setIdComputer(16 - i);
-                            occupedPc.add(16 - i);
-                        }
-                    } else {
-                        cm.setIdComputer(i);
-                        occupedPc.add(i);
-
-                    }
-                }
-
-            } else {
-                for (int i = 8; i >= 1; i--) {
-                    if (occupedPc.contains(i)) {
-                        if (occupedPc.contains(16 - i)) {
-                            break;
-                        } else {
-                            cm.setIdComputer(16 - i);
-                            occupedPc.add(16 - i);
-                        }
-                    } else {
-                        cm.setIdComputer(i);
-                        occupedPc.add(i);
-
-                    }
-                }
-            }
-
-        }
-
-        }
-
-        return listCM;
+        //*/
 
     }
 
@@ -561,46 +527,7 @@ public class GroupsMaker {
         }
 
         return null;
-/*        boolean donne = false;
-        ComputerMembers theCM = null;
 
-        for(ComputerMembers cm:list) {
-            if (cm.getMembers().size() == 0) {
-                cm.add(st);
-                theCM = cm;
-                donne = true;
-                break;
-            }
-        }
-        if(!donne) {
-            for(ComputerMembers cm:list) {
-
-                if (cm.getMembers().size() == 1) {
-                    if(cm.getMembers().get(0).isMale() == st.isMale()) {
-                        cm.add(st);
-                        theCM = cm;
-                        donne = true;
-                        break;
-                    }
-                }
-
-                }
-
-            }
-
-        if(!donne) {
-            for(ComputerMembers cm:list){
-                if(cm.getMembers().size() == 2) {
-                    if(cm.getMembers().get(0).isMale() == st.isMale()) {
-                        cm.add(st);
-                        theCM = cm;
-                        donne = true;
-                        break;
-                    }
-                }
-            }
-        }
-        return theCM;*/
     }
 
 
@@ -611,4 +538,202 @@ public class GroupsMaker {
     public void setPreparedFile(File preparedFile) {
         this.preparedFile = preparedFile;
     }
+
+    public ArrayList<File> createPdfs() {
+        ArrayList<File> files = new ArrayList();
+        File fileA, fileB;
+
+        for(UneClasse cl: this.classesList){
+            fileA = createHtml(cl.getListCMA(), " الفوج أ " + cl.getNameClasse());
+            fileB = createHtml(cl.getListCMB(), "  الفوج ب  " + cl.getNameClasse());
+            files.add(fileA);
+            files.add(fileB);
+
+        }
+
+        return files;
+    }
+
+    private File create(ArrayList<ComputerMembers> listCM, String name) {
+
+        File src = new File("C:\\Users\\ismail\\Desktop\\masque.pdf");
+        String path = "C:\\Users\\ismail\\Desktop\\";
+        String ARABIC
+                = "\u0627\u0644\u0633\u0639\u0631 \u0627\u0644\u0627\u062c\u0645\u0627\u0644\u064a";
+        String ARABIC_FONT
+                = "C:\\Windows\\Fonts/times.ttf";
+                //= "C:\\Windows\\Fonts/JannaLT-Regular.ttf";
+               // = "./src/test/resources/font/NotoNaskhArabic-Regular.ttf";
+
+        File dest = new File(path + name + ".pdf");
+        //LicenseKey.loadLicenseFile("C:\\Users\\ismail\\Desktop\\itextkey1565864874578_0.xml");
+        LicenseKey.loadLicenseFile("C:\\Users\\ismail\\Desktop\\itextkey1565894938266_0.xml");
+        //LicenseKey.loadLicenseFile("C:\\Users\\ismail\\Desktop\\itextkey1565895766470_0.xml");
+        PdfDocument pdfDoc = null;
+        try {
+            PdfFont f = PdfFontFactory.createFont(ARABIC_FONT, PdfEncodings.IDENTITY_H);
+
+            pdfDoc = new PdfDocument(new PdfReader(src), new PdfWriter(dest));
+            Document document = new Document(pdfDoc);
+
+
+
+            // add content
+
+            PdfPage page =pdfDoc.getPage(1);
+            //PdfCanvas canvas = new PdfCanvas(page);
+
+
+
+            // Create a PdfFont
+
+
+            //document.add(list);
+
+            //canvas.beginText().setFontAndSize(PdfFontFactory.createFont(FontConstants.TIMES_ROMAN), 12);
+            int y= 50;
+            for(ComputerMembers cm:listCM){
+                if(cm.getMembers().size() > 0) {
+                    y = y + 1;
+                    //canvas.moveText(200, y);
+                    //String s = "\u2022" + " " + cm.getMembers().get(0).getFullName();
+                    String s = "\u2022" + " سبع إسماعيل";
+                    //s="حشيشة";
+                    Paragraph p = new Paragraph().setBaseDirection(BaseDirection.LEFT_TO_RIGHT).setFontScript(Character.UnicodeScript.ARABIC);
+                    p.add(new Text(s).setFont(f));
+                    //p.add(new Text(s));
+
+                    document.add(p);
+
+                    //Paragraph p = new Paragraph();
+                    //p.add(s);
+                    //canvas.add(p);
+                    System.out.println(p.toString());
+                    //canvas.showText(s);
+                }
+            }
+
+            document.close();
+
+            //canvas.endText();
+            //pdfDoc.close();
+            return dest;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(dest.getName() + " not created");
+        return null;
+    }
+
+    private File createHtml(ArrayList<ComputerMembers> listCM, String name) {
+
+        File src = new File("C:\\Users\\ismail\\Desktop\\masque.pdf");
+        String path = "C:\\Users\\ismail\\Desktop\\";
+
+
+        File dest = new File(path + name + ".html");
+
+
+        //HTML code source
+        String dataText = "\t\n";
+
+        int x, y, y1, y2;
+        String nameStOne, nameStTwo;
+        for(ComputerMembers cm:listCM){
+
+            if(cm.getMembers().size() > 0){
+
+                if(cm.getIdComputer() <= 4){
+
+                    x = 725;
+                    y = 400 - ((cm.getIdComputer() - 1) * 75);
+                    y1 = y + 12;
+                    y2 = y - 12;
+
+                } else if(cm.getIdComputer() <= 10){
+
+                    x = 810 - ((cm.getIdComputer() - 5) * 138);
+                    y = 105;
+                    y1 = y;
+                    y2 = y + 19;
+                    if(cm.getIdComputer() == 10){
+                        x = 128;
+                    }
+
+                } else {
+                    dataText = dataText + "canvas.setAttribute('dir','ltr'); \n" + "context.font = \"13pt Times \";\n";
+
+                    x = 115;
+                    y = 175 + ((cm.getIdComputer() - 11) * 75);
+                    y1 = y + 12;
+                    y2 = y - 12;
+                    if(cm.getIdComputer() == 15){
+                        y = 467;
+                        y1 = y + 12;
+                        y2 = y - 12;
+                    }
+
+                }
+
+
+                //fill text in the canvas
+                if(cm.getMembers().size() == 1){
+
+                    nameStOne = cm.getMembers().get(0).getFullName();
+
+                    if((cm.getIdComputer() == 10 && nameStOne.length() > 15) ||
+                    ((cm.getIdComputer() >= 5 && cm.getIdComputer() <= 9) && nameStOne.length() > 18)){
+                        dataText = dataText + "context.font = \"12pt Times \";\n";
+                    }
+                    dataText = dataText
+                            +"context.fillText(\"• " + nameStOne + "\", " + x + ", " + y + ", 300)\n";
+
+                } else { // the size = 2
+
+                    nameStOne = cm.getMembers().get(0).getFullName();
+                    nameStTwo = cm.getMembers().get(1).getFullName();
+
+                    if((cm.getIdComputer() == 10 && nameStOne.length() > 15) ||
+                            ((cm.getIdComputer() >= 5 && cm.getIdComputer() <= 9) && nameStOne.length() > 18)){
+                        dataText = dataText + "context.font = \"12pt Times \";\n";
+                    }
+                    dataText = dataText
+                            +"context.fillText(\"• " + nameStOne + "\", " + x + ", " + y1 + ", 300)\n";
+
+                    if((cm.getIdComputer() == 10 && nameStTwo.length() > 15) ||
+                            ((cm.getIdComputer() >= 5 && cm.getIdComputer() <= 9) && nameStTwo.length() > 18)){
+                        dataText = dataText + "context.font = \"12pt Times \";\n";
+                    } else{
+                        dataText = dataText + "context.font = \"13pt Times \";\n";
+                    }
+
+                    dataText = dataText
+                            +"context.fillText(\"• " + nameStTwo + "\", " + x + ", " + y2 + ", 300)\n";
+
+                }
+
+            } // End if size > 0
+
+        } //End for
+
+        String html = HtmlSource.HEADER + dataText + HtmlSource.FOOTER;
+
+
+        PrintWriter writer = null;
+        try {
+            writer = new PrintWriter(dest, "UTF-8");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        writer.println(html);
+        writer.close();
+
+        return dest;
+
+    }
+
+
+
 }

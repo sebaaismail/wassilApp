@@ -11,7 +11,7 @@
     </Tab>
 
     <Tab fx:id="tab3" text="تقسيم الأفواج">
-        <fx:include source="MakingGroups.fxml"></fx:include>
+        <fx:include source="../seatsPlan/view/MakingGroups.fxml"></fx:include>
     </Tab>
 
 </TabPane>

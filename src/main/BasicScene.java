@@ -1,5 +1,7 @@
 package main;
 
+import com.aquafx_project.AquaFx;
+import com.guigarage.flatterfx.FlatterFX;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -8,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import org.aerofx.AeroFX;
 import view.BasicWinController;
 import view.InfoController;
 
@@ -50,6 +53,11 @@ public class BasicScene extends Scene {
 
             tp = loader2.load(getClass().getResource("/view/BasicWin.fxml"));
             this.getStylesheets().add(MyApp.class.getResource("myStyle.css").toExternalForm());
+            //AquaFx.style();
+            //AeroFX.style();
+            //FlatterFX.style();
+
+
 
 
         } catch (MalformedURLException e) {

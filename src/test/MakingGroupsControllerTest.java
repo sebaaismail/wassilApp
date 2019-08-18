@@ -1,9 +1,9 @@
 package test;
 
 import junit.framework.TestCase;
-import main.GroupsMaker;
+import seatsPlan.main.GroupsMaker;
 import main.MyApp;
-import view.MakingGroupsController;
+import seatsPlan.view.MakingGroupsController;
 
 import java.awt.*;
 import java.io.File;
