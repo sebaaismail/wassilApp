@@ -1,0 +1,1 @@
+mvn archetype:generate -DgroupId=com.sebaainf.app -DartifactId=wassilApp -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false

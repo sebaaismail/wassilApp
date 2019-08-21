@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
-    <file url="file://$PROJECT_DIR$/src/main/BasicScene.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/GlobalResult.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/GroupsMaker.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/UneClasse.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/test/MakingGroupsControllerTest.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/view/BasicWinController.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/view/InfoController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/sebaainf/main/BasicScene.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/sebaainf/main/ClasseRoom.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/sebaainf/main/GlobalResult.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/sebaainf/seatsPlan/GroupsMaker.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/sebaainf/view/BasicWinController.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java/com/sebaainf/view/InfoController.java" charset="UTF-8" />
     <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

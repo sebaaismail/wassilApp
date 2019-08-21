@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml" fx:id="gp" alignment="CENTER" vgap="15"
+          fx:controller="com.sebaainf.view.TwoFilesController">
+    <Pane fx:id="pane" GridPane.columnIndex="0" GridPane.rowIndex="0">
+
+    </Pane>
+    <VBox fx:id="vBox" GridPane.columnIndex="0" GridPane.rowIndex="2" spacing="15" alignment="TOP_CENTER"
+          GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" styleClass="lightVbox">
+        <Button fx:id="buttonNewTri" text="ملف الفصل الحالي" styleClass="glass-grey"
+                onAction="#buttonOneClick"></Button>
+        <Label fx:id="label1"></Label>
+        <HBox fx:id="hBox" GridPane.columnIndex="0" GridPane.rowIndex="1" spacing="20" alignment="CENTER">
+            <Button fx:id="buttonOldTri" text="ملف النتائج السابقة" styleClass="glass-grey"
+                    onAction="#buttonTwoTriClick"></Button>
+            <Button fx:id="buttonCalc" text="Traiter" styleClass="glass-grey" onAction="#buttonCalcClick"></Button>
+        </HBox>
+
+        <Label fx:id="label2"></Label>
+        <Label fx:id="messageLabel" styleClass="messageLabel"></Label>
+        <Button fx:id="config" text="تغيير التقديرات والإرشادات" styleClass="config-style"
+                onAction="#configClick"></Button>
+    </VBox>
+</GridPane>
