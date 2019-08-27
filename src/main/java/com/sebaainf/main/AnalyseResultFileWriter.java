@@ -32,7 +32,7 @@ public class AnalyseResultFileWriter {
 
     public File write() {
 
-        File fileAnalyse = new File(MyApp.selectedFile.getParentFile() + "\\" + "تحليل النتائج.xls");
+        File fileAnalyse = new File(AppOld.selectedFile.getParentFile() + "\\" + "تحليل النتائج.xls");
 
 
         FileOutputStream fosAnalyse = null;

@@ -45,9 +45,10 @@ public class AnalyseResult {
         maxMoy = 0.0;
         minMoy = 20;
         for (Student st : this.classeRoom.getListStudents()) {
-
-            moyStudent = st.getMoy();
-            noteExStudent = st.getNoteEx();
+//todo comments for refactoruing
+            //moyStudent = st.getMoy();
+            moyStudent = 0;noteExStudent = 0;// todo to delete
+            //noteExStudent = st.getNoteEx();
             sumMoys = sumMoys + moyStudent;
             sumMoysExams = sumMoysExams + noteExStudent;
 

@@ -1,14 +1,15 @@
 package com.sebaainf.view;
 
+import com.sebaainf.main.AppOld;
+import com.sebaainf.main.ConfigFile;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
-import main.BasicScene;
-import main.GlobalResult;
-import main.MyApp;
+import com.sebaainf.main.BasicScene;
+import com.sebaainf.main.GlobalResult;
 
 import java.awt.*;
 import java.io.File;
@@ -47,8 +48,8 @@ public class TwoFilesController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(userDir + "/Desktop"));
         fileChooser.setTitle("Selectionner le Fichier excel...");
-        MyApp.selectedFile = fileChooser.showOpenDialog(null); //theStage
-        label1.setText(MyApp.selectedFile.getPath());
+        AppOld.selectedFile = fileChooser.showOpenDialog(null); //theStage
+        label1.setText(AppOld.selectedFile.getPath());
     }
 
     public void buttonTwoTriClick() {
@@ -56,20 +57,20 @@ public class TwoFilesController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(userDir + "/Desktop"));
         fileChooser.setTitle("Selectionner le 2eme Fichier excel(L'ancien)...");
-        MyApp.selectedOldFile = fileChooser.showOpenDialog(null); //theStage
-        label2.setText(MyApp.selectedOldFile.getPath());
+        AppOld.selectedOldFile = fileChooser.showOpenDialog(null); //theStage
+        label2.setText(AppOld.selectedOldFile.getPath());
     }
 
     public void buttonCalcClick() {
 
-        if (MyApp.selectedFile != null) {
-            if (!MyApp.configLists()) return;
-            GlobalResult gr = MyApp.process_with_compare(MyApp.selectedOldFile, MyApp.selectedFile);
-
+        if (AppOld.selectedFile != null) {
+            if (!ConfigFile.configLists()) return;
+            //GlobalResult gr = AppOld.process_with_compare(AppOld.selectedOldFile, AppOld.selectedFile);
+            GlobalResult gr = null;
             File resFile = gr.getExcelResult();
             File analyseFile = gr.getAnalyseFile();
             //TODO for twoFiles
-            //String s = MyApp.process_with_compare(null, MyApp.selectedFile).getName();
+            //String s = AppOld.process_with_compare(null, AppOld.selectedFile).getName();
             messageLabel.setText("تم إنشاء الملف المعالج بنجاح \"" + resFile.getName() + "\"");
             try {
                 //wait(3000);
@@ -83,6 +84,6 @@ public class TwoFilesController {
     }
 
     public void configClick() {
-        MyApp.openConfigFile();
+        ConfigFile.openConfigFile();
     }
 }

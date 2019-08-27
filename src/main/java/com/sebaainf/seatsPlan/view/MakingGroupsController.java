@@ -1,15 +1,16 @@
 package com.sebaainf.seatsPlan.view;
 
+import com.sebaainf.main.AppOld;
+import com.sebaainf.main.ConfigFile;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
-import main.BasicScene;
-import main.GlobalResult;
+import com.sebaainf.main.BasicScene;
+import com.sebaainf.main.GlobalResult;
 import com.sebaainf.seatsPlan.GroupsMaker;
-import main.MyApp;
 
 import java.awt.*;
 import java.io.File;
@@ -50,8 +51,8 @@ public class MakingGroupsController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(userDir + "/Desktop"));
         fileChooser.setTitle("Selectionner le Fichier excel...");
-        MyApp.selectedFile = fileChooser.showOpenDialog(null); //theStage
-        label.setText(MyApp.selectedFile.getPath());
+        AppOld.selectedFile = fileChooser.showOpenDialog(null); //theStage
+        label.setText(AppOld.selectedFile.getPath());
     }
     public void buttonFichier2Click() {
 
@@ -59,19 +60,19 @@ public class MakingGroupsController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(userDir + "/Desktop"));
         fileChooser.setTitle("Selectionner le Fichier excel...");
-        MyApp.selectedPreparedFile = fileChooser.showOpenDialog(null); //theStage
-        label.setText(MyApp.selectedPreparedFile.getPath());
+        AppOld.selectedPreparedFile = fileChooser.showOpenDialog(null); //theStage
+        label.setText(AppOld.selectedPreparedFile.getPath());
     }
 
 
     public void buttonPrepareGroupsClick() {
-        if (MyApp.selectedFile != null) {
-            if (!MyApp.configLists()) return;
-            GlobalResult gr = MyApp.processForGroups(MyApp.selectedFile);
+        if (AppOld.selectedFile != null) {
+            if (!ConfigFile.configLists()) return;
+            GlobalResult gr = AppOld.processForGroups(AppOld.selectedFile);
             File pre = gr.getPrepareGroupsFile();
 
             //TODO for twoFiles
-            //String s = MyApp.process_with_compare(null, MyApp.selectedFile).getName();
+            //String s = AppOld.process_with_compare(null, AppOld.selectedFile).getName();
             messageLabel.setText("تم إنشاء ملف تحضير الأفواج \"" + pre.getName() + "\"");
             try {
                 //wait(3000);
@@ -84,8 +85,8 @@ public class MakingGroupsController {
     }
 
     public File buttonGroupingClick() {
-        if (MyApp.selectedPreparedFile != null) {
-            GroupsMaker gm = new GroupsMaker(MyApp.selectedPreparedFile);
+        if (AppOld.selectedPreparedFile != null) {
+            GroupsMaker gm = new GroupsMaker(AppOld.selectedPreparedFile);
             File pre = gm.run();
             ArrayList<File> mapPdfs = gm.createPdfs();
 

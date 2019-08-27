@@ -15,6 +15,7 @@ import java.util.Iterator;
 public class ExcelFileParser {
 
     private File selectedFile;
+
     public ExcelFileParser(File selectedFile) {
         this.selectedFile = selectedFile;
     }
@@ -32,14 +33,11 @@ public class ExcelFileParser {
         int lastDot = fileName.lastIndexOf('.');
 
 
-
         fileName = selectedFile.getParentFile() + "\\" + fileName.substring(0, lastDot) + " + التقديرات" + fileName.substring(lastDot);
-
 
 
         File fileResult = new File(fileName);
         File filePrepareGr = new File(fileName); //TODO
-
 
 
         FileInputStream fis = null;
@@ -51,8 +49,6 @@ public class ExcelFileParser {
 
             //Get the workbook instance for XLSX file
             HSSFWorkbook workbook = new HSSFWorkbook(fis);
-
-
 
 
             if (selectedFile.isFile() && selectedFile.exists()) {
@@ -82,70 +78,70 @@ public class ExcelFileParser {
 
                 System.out.println("feuille : " + sheet.getSheetName());
 
-                if(sheet.getRow(5) != null){
+                if (sheet.getRow(5) != null) {
 
-                ClasseRoom classeRes = new ClasseRoom();
-                classeRes.setNameClasseRoom(sheet.getSheetName());
-
-
-                FileOutputStream fos = new FileOutputStream(fileResult);
+                    ClasseRoom classeRes = new ClasseRoom();
+                    classeRes.setNameClasseRoom(sheet.getSheetName());
 
 
-                //FileOutputStream fos = new FileOutputStream(file);
-
-                int r = 8; // r = 8
+                    FileOutputStream fos = new FileOutputStream(fileResult);
 
 
-                //Cell ccc = sheet.getRow(34).getCell(1);
+                    //FileOutputStream fos = new FileOutputStream(file);
 
-                //System.out.println(sheet.getRow(34).getCell(1).getStringCellValue());
-                Iterator<Row> rowIterator = sheet.rowIterator();
-
-                int takdirateColumn = 8;
-                //iterate students
-                while (rowIterator.hasNext()) {
-
-                    Row row = rowIterator.next();
-
-                    //if ((row.getRowNum() >= 8 && nbstudents != 26 && nbstudents != 76 & i!=3)|| (row.getRowNum() >= 8 && i==3 && r != 20)){
-                    if (row.getRowNum() >= 8) {
-                        //System.out.println("row cell" + row.getCell(0).getStringCellValue());
-                        //while (!sheet.getRow(r).getCell(1).getStringCellValue().isEmpty()) {  //old version of files
-                        nbstudents++;
+                    int r = 8; // r = 8
 
 
-                        //if file has not TP column
-                        if (sheet.getRow(7).getCell(9) == null) {
-                            classeRes.setHasNoteTP(false);
-                            takdirateColumn = 7;
-                        } else {
-                            classeRes.setHasNoteTP(true);
+                    //Cell ccc = sheet.getRow(34).getCell(1);
+
+                    //System.out.println(sheet.getRow(34).getCell(1).getStringCellValue());
+                    Iterator<Row> rowIterator = sheet.rowIterator();
+
+                    int takdirateColumn = 8;
+                    //iterate students
+                    while (rowIterator.hasNext()) {
+
+                        Row row = rowIterator.next();
+
+                        //if ((row.getRowNum() >= 8 && nbstudents != 26 && nbstudents != 76 & i!=3)|| (row.getRowNum() >= 8 && i==3 && r != 20)){
+                        if (row.getRowNum() >= 8) {
+                            //System.out.println("row cell" + row.getCell(0).getStringCellValue());
+                            //while (!sheet.getRow(r).getCell(1).getStringCellValue().isEmpty()) {  //old version of files
+                            nbstudents++;
+
+
+                            //if file has not TP column
+                            if (sheet.getRow(7).getCell(9) == null) {
+                                classeRes.setHasNoteTP(false);
+                                takdirateColumn = 7;
+                            } else {
+                                classeRes.setHasNoteTP(true);
+                            }
+
+                            //todo student = new Student(sheet.getRow(r), classeRes.getHasNoteTP(), false);
+
+                            student.setNumRow(r);
+                            System.out.println(" row num " + r);
+
+                            classeRes.addStudent(student);
+
+                            System.out.println("number students = " + nbstudents);
+
+                            r++;
                         }
 
-                        student = new Student(sheet.getRow(r), classeRes.getHasNoteTP(), false);
-
-                        student.setNumRow(r);
-                        System.out.println(" row num " + r);
-
-                        classeRes.addStudent(student);
-
-                        System.out.println("number students = " + nbstudents);
-
-                        r++;
                     }
 
-                }
+                    classeRes.calculateStats();
 
-                classeRes.calculateStats();
-
-                globalRes.add(classeRes);
+                    globalRes.add(classeRes);
 
 
-                workbook.write(fos);
-                fos.close();
+                    workbook.write(fos);
+                    fos.close();
 
 
-            }// end if row(5)
+                }// end if row(5)
                 //messageLabel.setText("تم إنشاء الملف المعالج بنجاح \""+ fileResult.getName() + "\"");
             }
 

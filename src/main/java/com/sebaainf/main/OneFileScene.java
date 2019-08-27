@@ -21,8 +21,8 @@ class OneFileScene extends BasicScene {
             OneFileController cont = new OneFileController();
             loader.setController(cont);
 
-            gp = loader.load(getClass().getResource("/com/sebaainf/view/OneFile.fxml").openStream());
-            this.getStylesheets().add(MyApp.class.getResource("myStyle.css").toExternalForm());
+            gp = loader.load(getClass().getResource("/OneFile.fxml").openStream());
+            this.getStylesheets().add(AppOld.class.getResource("myStyle.css").toExternalForm());
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {

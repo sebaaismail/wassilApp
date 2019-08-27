@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import main.BasicScene;
+import com.sebaainf.main.BasicScene;
 
 /**
  * Created by Ismail on 25/12/2018.

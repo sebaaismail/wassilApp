@@ -1,19 +1,22 @@
 package com.sebaainf.view;
 
+import com.sebaainf.ismPoiLib.IPoiObject;
+import com.sebaainf.ismPoiLib.IPoiResults;
+import com.sebaainf.ismPoiLib.IPoiWorkbookCalculator;
+import com.sebaainf.ismPoiLib.MyFileWriter;
+import com.sebaainf.main.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
-import main.BasicScene;
-import main.ExcelFileParser;
-import main.GlobalResult;
-import main.MyApp;
+import org.apache.poi.ss.usermodel.Row;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by Ismail on 26/12/2018.
@@ -41,20 +44,28 @@ public class OneFileController {
 
     public void buttonCalcClick() {
 
-        if (MyApp.selectedFile != null) {
-            if (!MyApp.configLists()) return;
+        if (AppOld.selectedFile != null) {
+            if (!ConfigFile.configLists()) return;
 
-            ExcelFileParser parser = new ExcelFileParser(MyApp.selectedFile);
-            GlobalResult gr = parser.process();
-            File res = gr.getExcelResult();
-            File resAnalyseFile = gr.getAnalyseFile();
+            MyFileParser parser = new MyFileParser(AppOld.selectedFile);
+
+            IPoiWorkbookCalculator calculator = new IPoiWorkbookCalculator(parser.parse());
+            calculator.calculate();
+            Map<IPoiObject, IPoiResults> results = calculator.getResults();
+            Map<Row, IPoiObject> placeObj = calculator.getPlaceObjs();
+            MyFileWriter writer = new MyFileWriter(parser);
+
+            File res = writer.write(results, placeObj);
+
+            //File res = gr.getExcelResult();
+            //File resAnalyseFile = gr.getAnalyseFile();
             //TODO for twoFiles
-            //String s = MyApp.process_with_compare(null, MyApp.selectedFile).getName();
+            //String s = AppOld.process_with_compare(null, AppOld.selectedFile).getName();
             messageLabel.setText("تم إنشاء الملف المعالج بنجاح \"" + res.getName() + "\"");
             try {
                 //wait(3000);
                 Desktop.getDesktop().open(res);
-                Desktop.getDesktop().open(resAnalyseFile);
+                //Desktop.getDesktop().open(resAnalyseFile);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -63,7 +74,7 @@ public class OneFileController {
     }
 
     public void configClick() {
-        MyApp.openConfigFile();
+        ConfigFile.openConfigFile();
     }
 
 
@@ -72,7 +83,7 @@ public class OneFileController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(userDir + "/Desktop"));
         fileChooser.setTitle("Selectionner le Fichier excel...");
-        MyApp.selectedFile = fileChooser.showOpenDialog(null); //theStage
-        label.setText(MyApp.selectedFile.getPath());
+        AppOld.selectedFile = fileChooser.showOpenDialog(null); //theStage
+        label.setText(AppOld.selectedFile.getPath());
     }
 }

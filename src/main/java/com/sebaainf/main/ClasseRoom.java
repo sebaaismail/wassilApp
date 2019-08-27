@@ -94,22 +94,24 @@ public class ClasseRoom implements Comparable{
         this.setNameClasseRoom(sheetCible.getSheetName());
         for (Student st : this.getListStudents()
                 ) {
-            moy = st.getMoy();
-            noteEx = st.getNoteEx();
+            //moy = st.getMoy();
+            //noteEx = st.getNoteEx();
 
-            moyb = listB.get(this.getListStudents().indexOf(st)).getMoy();
+            //moyb = listB.get(this.getListStudents().indexOf(st)).getMoy();
 
-            sheetCible.getRow(st.getNumRow()).getCell(8).setCellValue(MyApp.listTak[((int) moy)]); //old .getCell(7)
+            //sheetCible.getRow(st.getNumRow()).getCell(8).setCellValue(AppOld.listTak[((int) moy)]); //old .getCell(7)
 
-            st.addIrchadateByCompare(sheetCible.getRow(st.getNumRow()), moyb);
+            //st.addIrchadateByCompare(sheetCible.getRow(st.getNumRow()), moyb);
 
 
-            System.out.println("123456789 : " + MyApp.irchadateByCompare(moyb, moy));
+           // System.out.println("123456789 : " + AppOld.irchadateByCompare(moyb, moy));
+            /*
             if (moy - moyb >= 2) {
                 this.setUp(this.getUp() + 1);
             } else if (moyb - moy >= 2) {
                 this.setDown(this.getDown() + 1);
             }
+            */
             //}
 
 

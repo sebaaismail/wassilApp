@@ -1,7 +1,5 @@
 package com.sebaainf.main;
 
-import com.aquafx_project.AquaFx;
-import com.guigarage.flatterfx.FlatterFX;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -10,7 +8,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
-import org.aerofx.AeroFX;
 import com.sebaainf.view.BasicWinController;
 import com.sebaainf.view.InfoController;
 
@@ -48,11 +45,11 @@ public class BasicScene extends Scene {
             loader2.setController(cont2);
 
 
-            vBox = loader.load(getClass().getResource("/com/sebaainf/view/Info.fxml").openStream());
+            vBox = loader.load(Thread.currentThread().getContextClassLoader().getResource("Info.fxml").openStream());
 
-
-            tp = loader2.load(getClass().getResource("/com/sebaainf/view/BasicWin.fxml"));
-            this.getStylesheets().add(MyApp.class.getResource("myStyle.css").toExternalForm());
+            tp = loader2.load(Thread.currentThread().getContextClassLoader().getResource("BasicWin.fxml"));
+            this.getStylesheets().add(
+                    Thread.currentThread().getContextClassLoader().getResource("myStyle.css").toExternalForm());
             //AquaFx.style();
             //AeroFX.style();
             //FlatterFX.style();

@@ -9,7 +9,7 @@
     <children>
         <ImageView fx:id="iv1">
             <image>
-                <Image fx:id="logo" url="file:../../resources/data01.bin"/>
+                <Image fx:id="logo" url="file:data01.bin"/>
             </image>
         </ImageView>
         <Pane fx:id="blankPane">
@@ -17,7 +17,7 @@
         </Pane>
         <ImageView fx:id="iv2">
             <image>
-                <Image fx:id="info" url="file:../../resources/data02.bin"/>
+                <Image fx:id="info" url="file:data02.bin"/>
             </image>
         </ImageView>
 
